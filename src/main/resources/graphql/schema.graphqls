@@ -1,0 +1,119 @@
+# ========================================
+# QUERIES (Consultas)
+# ========================================
+type Query {
+  # Productos
+  productos: [Producto!]!
+  productoPorSku(sku: String!): Producto
+  
+  # Inventario
+  inventario(almacen: String): [Inventario!]!
+  inventarioBajoStock: [Inventario!]!
+  
+  # Lotes
+  lotes(almacen: String): [Lote!]!
+  lotesProximosVencer(dias: Int!): [Lote!]!
+  
+  # Órdenes de compra
+  ordenesCompra(estado: String): [OrdenCompra!]!
+  
+  # MRP
+  ejecutarMRP: ResultadoMRP!
+}
+
+# ========================================
+# MUTATIONS (Modificaciones)
+# ========================================
+type Mutation {
+
+  # CRUD Productos
+  crearProducto(sku: String!, input: ProductoInput!): Producto!
+  actualizarProducto(sku: String!, input: ProductoInput!): Producto!
+  eliminarProducto(sku: String!): Boolean!
+  
+  # Inventario
+  ajustarStock(sku: String!, almacen: String!, cantidad: Int!): Inventario!
+  reservarStock(sku: String!, almacen: String!, cantidad: Int!): Inventario!
+  
+  # Lotes
+  registrarLote(input: LoteInput!): Lote!
+  
+  # Órdenes de compra
+  aprobarOrden(id: ID!): OrdenCompra!
+}
+
+# ========================================
+# TYPES (Tipos de datos)
+# ========================================
+type Producto {
+  sku: String!
+  nombre: String!
+  categoria: String
+  costoUnitario: Float
+  precioVenta: Float
+  diasLeadTime: Int
+}
+
+type Inventario {
+  id: ID!
+  sku: String!
+  almacen: String!
+  cantidadDisponible: Int!
+  cantidadReservada: Int!
+  puntoReorden: Int!
+  stockSeguridad: Int!
+  actualizadoEn: String!
+  cantidadTotal: Int!
+}
+
+type Lote {
+  id: ID!
+  sku: String!
+  numeroLote: String!
+  cantidad: Int!
+  fechaVencimiento: String!
+  almacen: String!
+  diasParaVencer: Long!
+  estaVencido: Boolean!
+}
+
+type OrdenCompra {
+  id: ID!
+  numeroOc: String!
+  sku: String!
+  cantidadSugerida: Int!
+  estado: String!
+  creadoPor: String!
+  creadoEn: String!
+}
+
+type ResultadoMRP {
+  ordenesGeneradas: Int!
+  ordenes: [OrdenCompra!]!
+  mensaje: String!
+}
+
+# ========================================
+# INPUTS (Datos de entrada)
+# ========================================
+
+input ProductoInput {
+  nombre: String!
+  categoria: String
+  costoUnitario: Float
+  precioVenta: Float
+  diasLeadTime: Int
+}
+
+input LoteInput {
+  sku: String!
+  numeroLote: String!
+  cantidad: Int!
+  fechaVencimiento: String!
+  almacen: String!
+}
+
+# ========================================
+# SCALARS PERSONALIZADOS
+# ========================================
+scalar Long
